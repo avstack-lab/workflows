@@ -1,0 +1,25 @@
+name: Init python and UV
+description: Installs python and UV
+
+inputs:
+  python-version:
+    description: Version of python to use
+    required: true
+    default: "3.10"
+  uv-version:
+    description: Version of UV to install
+    required: true
+    default: "0.6.14"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v5
+      with:
+          python-version: ${{ inputs.python-version }}
+
+    - name: Install uv ${{ inputs.uv-version }}
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: ${{ inputs.uv-version }}

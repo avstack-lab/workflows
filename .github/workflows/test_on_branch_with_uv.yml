@@ -1,0 +1,45 @@
+name: Run tests on some branch
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+      os:
+        default: ubuntu-22.04
+        type: string
+      python-versions:
+        required: false
+        type: string
+        default: "[ '3.10' ]"
+      uv-versions:
+        required: false
+        type: string
+        default: "[ '0.6.14' ]"
+
+jobs:
+  build_and_test:
+    name: Run unit tests on ${{ inputs.branch }} branch
+
+    runs-on: ${{ inputs.os }}
+
+    strategy:
+      matrix:
+        python-version: ${{ fromJSON(inputs.python-versions) }}
+        uv-version: ${{ fromJSON(inputs.uv-versions) }}
+  
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install environment
+        uses: avstack-lab/workflows/.github/actions/install-uv@main
+        with: 
+          python-version: ${{ matrix.python-version }}
+          uv-version: ${{ matrix.uv-version }}
+          install-percep: true
+
+      - name: Run unit tests
+        uses: avstack-lab/workflows/.github/actions/test-uv@main
+        with:
+          test-folder: tests
