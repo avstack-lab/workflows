@@ -26,15 +26,17 @@ env:
 
 jobs:
   build:
-    name: Build and publish the package to pypi
+    name: Build and publish the package to some index
+
     runs-on: ${{ inputs.os }}
+
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Init UV and python
-        uses: avstack-lab/workflows/.github/actions/install-uv
+        uses: avstack-lab/workflows/.github/actions/install-uv@main
         with:
           python-version: ${{ inputs.python-version }}
           uv-version: ${{ inputs.uv-version }}
