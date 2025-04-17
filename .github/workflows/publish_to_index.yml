@@ -1,0 +1,46 @@
+name: Publish a release to TestPyPI
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        default: ubuntu-22.04
+        type: string
+      python-version:
+        required: false
+        type: string
+        default: "3.10"
+      uv-version:
+        required: false
+        type: string
+        default: "0.6.14"
+      token:
+        required: true
+        type: string
+      index:
+        required: true
+        type: string
+
+env:
+ BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+
+jobs:
+  build:
+    name: Build and publish the package to pypi
+    runs-on: ${{ inputs.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Init UV and python
+        uses: avstack-lab/workflows/.github/actions/install-uv
+        with:
+          python-version: ${{ inputs.python-version }}
+          uv-version: ${{ inputs.uv-version }}
+      
+      - name: Build
+        run: uv build
+
+      - name: Publish
+        run: uv publish --index ${{ inputs.index }} --token ${{ inputs.token }} --verbose
